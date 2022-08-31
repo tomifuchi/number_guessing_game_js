@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Number guessing game</title>
+  <style>
+    body {
+      margin: 0 auto;
+      max-width: 700px;
+    }
+    input {
+      border: 1px solid #000;
+    }
+    button {
+      color: black;
+      border: 1px solid #000;
+      padding: .1em 1em;
+    }
+    button.none{
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Number guessing game</h1>
+  <h3>Rule of the game:</h3>
+  <p>You are going to guess a number 
+    from 1 to 10. If you guessed wrong
+    there will be a hint when you guessed wrong, so you
+    can try again. Try to get a correct answer with 
+    the least amount of tries.
+  </p>
+  <ul><i>How to play</i>:
+    <li>Input a number</li>
+    <li>Press <b>ENTER</b></li>
+  </ul>
+  <h4 id="result"></h4>
+  <h5 id="tries"></h5>
+  <p id="hint"></p>
+  <input id="guess" type="text">
+  <button id="again" class="none">Play again ?</button>
+  <script>
+    //Initializing the references to the DOM
+    const result = document.getElementById("result");
+    const hint = document.getElementById("hint");
+    const guess = document.getElementById("guess");
+    const again= document.getElementById("again");
+    const tries = document.getElementById("tries");
+    //Generate a random integer from 0 to a
+    function randNum(a){
+      return Math.floor(Math.random() * a);
+    }
+    //Checking the result
+    function checkResult(num, res){
+      tries.textContent = "Number of tries: " + (++number_of_tries).toString();
+      if(num === res) {
+        result.textContent = "Correct!";
+        hint.innerHTML= "You got it right !";
+        return true;
+      }
+      else {
+        result.textContent = "Incorrect!";
+        hint.innerHTML= `Guess ${(num < res) ? "higher":"lower"}`;
+        return false;
+      }
+    }
+
+    let random_number = randNum(10);
+    let number_of_tries = 0;
+    guess.addEventListener('change', () => {
+      //NaN or a decimal ?
+      if(isNaN(guess.value) || (guess.value % 1 !== 0)){
+        hint.textContent = "Please enter an integer";
+        return;
+      } else {
+          if(checkResult(parseInt(guess.value), random_number)){
+            guess.style.display = "none";
+            again.classList.toggle("none");
+          }
+        }
+    });
+
+    again.addEventListener('click', () => {
+      result.textContent = hint.innerHTML = tries.textContent = "";
+      random_number = randNum(10);
+      number_of_tries = 0;
+      guess.style.display = "block";
+      again.classList.toggle("none");
+    });
+  </script>
+</body>
+</html>
