@@ -2,9 +2,11 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Number guessing game</title>
   <style>
     body {
+      padding: 0 5px;
       margin: 0 auto;
       max-width: 700px;
     }
@@ -23,15 +25,15 @@
 </head>
 <body>
   <h1>Number guessing game</h1>
-  <h3>Rule of the game:</h3>
+  <h3>Rule of this game:</h3>
   <p>You are going to guess an integer
-    based on the difficulty. If you guessed wrong
+    within range of the difficulty setting below. If you guessed wrong
     there will be a hint for you, so you
     can try again. Try to get a correct answer with 
     the least amount of tries.
   </p>
   <ul><i>How to play</i>:
-    <li>Input an integer based on the difficulty</li>
+    <li>Input an integer within range of the difficulty</li>
     <li>Press <b>Submit</b></li>
   </ul>
   <ul><i>Difficulty</i>
@@ -64,6 +66,7 @@
     const diff = document.getElementById("difficulty");
 
     //Initializing variables
+    let range =  10;
     let random_number = generateQuestion(diff); 
     let number_of_tries = 0;
     //Generate a random integer from 0 to a
@@ -73,22 +76,21 @@
     //Initialize random number based on difficulty setting
     function generateQuestion(select) {
       const choice = select.value;
-      let num;
       switch (choice) {
         case 'easy':
-          num = randNum(5);
+          range = 5;
           break;
         case 'normal':
-          num = randNum(10);
+          range = 10;
           break;
         case 'difficult':
-          num = randNum(100);
+          range = 100;
           break;
         default: //Overtly paranoid is paranoid
-          num = randNum(10);
+          range = 10;
           break;
       }
-      return num;
+      return randNum(range);
     }
 
     //Checking the result
@@ -106,14 +108,24 @@
       }
     }
 
-    function checkInput(input){
-      //NaN or a decimal ?
-      return (isNaN(input)) || (input % 1 !== 0);
+    function checkErrorInput(input){
+        //NaN or a decimal ?
+        if ((isNaN(input)) || (input % 1 !== 0)) {
+          result.textContent = "Invalid!";
+          hint.innerHTML= "Please enter an integer!";
+          return true;
+        } //Within range ?
+        else if ((input > range) || (input < 0)){
+          result.textContent = "Invalid!";
+          hint.innerHTML= "Please enter an integer within range!";
+          return true;
+        }
+        return false;
     }
 
     submit.addEventListener('click', () => {
       let guessed_number = Number(guess.value);
-      if (checkInput(guessed_number)){
+      if (checkErrorInput(guessed_number)){
         return;
       } else {
           if(checkResult(guessed_number, random_number)){
