@@ -16,7 +16,7 @@
       border: 1px solid #000;
       padding: .1em 1em;
     }
-    button.none{
+    .none{
       display: none;
     }
   </style>
@@ -31,13 +31,27 @@
     the least amount of tries.
   </p>
   <ul><i>How to play</i>:
-    <li>Input a number</li>
-    <li>Press <b>ENTER</b></li>
+    <li>Input an integer from 0 to 10</li>
+    <li>Press <b>Submit</b></li>
   </ul>
+  <ul><i>Difficulty</i>
+    <li>Easy: 0 to 5</li>
+    <li>Normal: 0 to 10</li>
+    <li>Difficult: 0 to 100</li>
+  </ul>
+ 
+  <h4>Difficulty:</h4>
+  <select name="difficulty" id="difficulty">
+    <option value="easy">Easy</option>
+    <option value="normal">Normal</option>
+    <option value="difficult">Difficult</option>
+  </select>
+  </select>
   <h4 id="result"></h4>
   <h5 id="tries"></h5>
   <p id="hint"></p>
   <input id="guess" type="text">
+  <button id="submit">Submit</button>
   <button id="again" class="none">Play again ?</button>
   <script>
     //Initializing the references to the DOM
@@ -46,10 +60,37 @@
     const guess = document.getElementById("guess");
     const again= document.getElementById("again");
     const tries = document.getElementById("tries");
+    const submit= document.getElementById("submit");
+    const diff = document.getElementById("difficulty");
+
+    //Initializing variables
+    let random_number = generateQuestion(diff); 
+    let number_of_tries = 0;
     //Generate a random integer from 0 to a
     function randNum(a){
       return Math.floor(Math.random() * a);
     }
+    //Initialize random number based on difficulty setting
+    function generateQuestion(select) {
+      const choice = select.value;
+      let num;
+      switch (choice) {
+        case 'easy':
+          num = randNum(5);
+          break;
+        case 'normal':
+          num = randNum(10);
+          break;
+        case 'difficult':
+          num = randNum(100);
+          break;
+        default: //Overtly paranoid is paranoid
+          num = randNum(10);
+          break;
+      }
+      return num;
+    }
+
     //Checking the result
     function checkResult(num, res){
       tries.textContent = "Number of tries: " + (++number_of_tries).toString();
@@ -65,28 +106,41 @@
       }
     }
 
-    let random_number = randNum(10);
-    let number_of_tries = 0;
-    guess.addEventListener('change', () => {
+    function checkInput(input){
       //NaN or a decimal ?
-      if(isNaN(guess.value) || (guess.value % 1 !== 0)){
-        hint.textContent = "Please enter an integer";
+      return (isNaN(input)) || (input % 1 !== 0);
+    }
+
+    submit.addEventListener('click', () => {
+      let guessed_number = Number(guess.value);
+      if (checkInput(guessed_number)){
         return;
       } else {
-          if(checkResult(parseInt(guess.value), random_number)){
-            guess.style.display = "none";
+          if(checkResult(guessed_number, random_number)){
+            guess.classList.toggle("none");
+            submit.classList.toggle("none");
             again.classList.toggle("none");
           }
         }
     });
 
-    again.addEventListener('click', () => {
-      result.textContent = hint.innerHTML = tries.textContent = "";
-      random_number = randNum(10);
+    function diffReset(){
+      random_number = generateQuestion(diff);
       number_of_tries = 0;
-      guess.style.display = "block";
+      result.textContent = hint.innerHTML 
+      = tries.textContent = "";
+      guess.value = "";
+    }
+
+    function reset() {
+      diffReset();
+      guess.classList.toggle("none");
+      submit.classList.toggle("none");
       again.classList.toggle("none");
-    });
+    }
+
+    again.addEventListener('click', reset);
+    diff.addEventListener('change', diffReset);
   </script>
 </body>
 </html>
