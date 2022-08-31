@@ -109,13 +109,21 @@
     }
 
     function checkErrorInput(input){
+        //Check empty string
+        if (input.value === "") {
+          result.textContent = "Invalid!";
+          hint.innerHTML= "Enter something!";
+          return true;
+        }
+
+        let num = Number(input.value); 
         //NaN or a decimal ?
-        if ((isNaN(input)) || (input % 1 !== 0)) {
+        if ((isNaN(num)) || (num % 1 !== 0)) {
           result.textContent = "Invalid!";
           hint.innerHTML= "Please enter an integer!";
           return true;
         } //Within range ?
-        else if ((input > range) || (input < 0)){
+        else if ((num > range) || (num < 0)){
           result.textContent = "Invalid!";
           hint.innerHTML= "Please enter an integer within range!";
           return true;
@@ -124,10 +132,10 @@
     }
 
     submit.addEventListener('click', () => {
-      let guessed_number = Number(guess.value);
-      if (checkErrorInput(guessed_number)){
+      if (checkErrorInput(guess)){
         return;
       } else {
+          let guessed_number = Number(guess.value);
           if(checkResult(guessed_number, random_number)){
             guess.classList.toggle("none");
             submit.classList.toggle("none");
